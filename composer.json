@@ -1,0 +1,17 @@
+{
+    "name": "hexlet/code",
+    "authors": [
+        {
+            "name": "DimonNikolaev",
+            "email": "dmitriy.nikolaev1337@gmail.com"
+        }
+    ],
+    "require": {
+        "docopt/docopt": "^1.0"
+    },
+    "autoload": {
+        "files": [
+            "vendor/docopt/docopt/src/docopt.php"
+        ]
+    }
+}
