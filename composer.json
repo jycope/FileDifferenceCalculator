@@ -7,11 +7,22 @@
         }
     ],
     "require": {
-        "docopt/docopt": "^1.0"
+        "docopt/docopt": "^1.0",
+        "lstrojny/functional-php": "^1.17"
     },
     "autoload": {
         "files": [
-            "vendor/docopt/docopt/src/docopt.php"
+            "vendor/docopt/docopt/src/docopt.php",
+            "src/info.php",
+            "src/differenceFiles.php"
         ]
+    },
+    "scripts": {
+        "phpcs": "phpcs",
+        "phpunit": "phpunit",
+        "test": "phpunit tests"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
     }
 }
