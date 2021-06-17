@@ -58,5 +58,3 @@ function genDiff(string $pathFile1, string $pathFile2): string
 
     return convertedToJson($result);
 }
-
-print_r(genDiff('tests/fixtures/fileEmpty1.json', 'tests/fixtures/fileEmpty2.json'));
