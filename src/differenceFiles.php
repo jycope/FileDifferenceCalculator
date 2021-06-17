@@ -2,31 +2,24 @@
 
 namespace Differ\differenceFiles;
 
-// $autoloadPath1 = __DIR__ . '/../../../autoload.php';
-// $autoloadPath2 = __DIR__ . '/../vendor/autoload.php';
-// if (file_exists($autoloadPath1)) {
-//     require_once $autoloadPath1;
-// } else {
-//     require_once $autoloadPath2;
-// }
-
 use function Functional\sort;
 
 function convertedToJson(array $array): string
-{   
-    $result = '';   
+{
+    $result = '';
 
     foreach ($array as $key => $value) {
-        $operatorChanged = explode(' ', $key)[0];
-        $stateFile = $operatorChanged === ('-' || '+') ? $operatorChanged: '';
+        $operatorChanged = explode(' ', $key)[1];
 
-        $result .= "{$stateFile} {$key}: {$value} \n";
+        $stateFile = $operatorChanged === ('-' || '+') ? $operatorChanged : '';
+
+        $result .= "{$stateFile} {$key}: {$value}\n";
     }
 
     return "{\n" . $result . "}"; 
 }
 
-function genDiff(string $pathFile1, string $pathFile2)
+function genDiff(string $pathFile1, string $pathFile2): string
 {
     $json1 = json_decode(file_get_contents($pathFile1), true);
     $json2 = json_decode(file_get_contents($pathFile2), true);
@@ -34,14 +27,16 @@ function genDiff(string $pathFile1, string $pathFile2)
     $mergedFiles = array_merge($json1, $json2);
 
     ksort($mergedFiles);
-    
+
     foreach ($mergedFiles as $key => $value) {
+        $value = is_bool($value) ? ($value === true ? 'true' : 'false') : $value;
+
         $isKeyContainsTwoFiles = array_key_exists($key, $json1) && array_key_exists($key, $json2);
         $isKeyContainsOnlFirstFile = array_key_exists($key, $json1) && !array_key_exists($key, $json2);
         $isKeyContainsOnlySecondFile = !array_key_exists($key, $json1) && array_key_exists($key, $json2);
 
-        $emptySecondFile = ' - ' . $key;
-        $emptyFirstFile = ' + ' . $key;
+        $emptySecondFileValue = ' - ' . $key;
+        $emptyFirstFileValue = ' + ' . $key;
         $keyEmpty = '   ' . $key;
 
         if ($isKeyContainsTwoFiles) {
@@ -51,17 +46,17 @@ function genDiff(string $pathFile1, string $pathFile2)
             if ($valueFirstFile === $valueSecondFile) {
                 $result[$keyEmpty] = $value;
             } elseif ($valueFirstFile !== $valueSecondFile) {
-                $result[$emptySecondFile] = $value;
-                $result[$emptyFirstFile] = $valueFirstFile;
+                $result[$emptySecondFileValue] = $valueFirstFile;
+                $result[$emptyFirstFileValue] = $value;
             }
         } elseif ($isKeyContainsOnlySecondFile) {
-            $result[$emptyFirstFile] = $value;
+            $result[$emptyFirstFileValue] = $value;
         } elseif ($isKeyContainsOnlFirstFile) {
-            $result[$emptySecondFile] = $value;
+            $result[$emptySecondFileValue] = $value;
         }
     }
 
     return convertedToJson($result);
 }
 
-print_r(genDiff('jsonFiles/file1.json', 'jsonFiles/file2.json'));
+print_r(genDiff('tests/fixtures/fileEmpty1.json', 'tests/fixtures/fileEmpty2.json'));

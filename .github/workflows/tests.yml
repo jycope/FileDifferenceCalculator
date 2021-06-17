@@ -1,0 +1,14 @@
+name: test
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install
+        run: make install
+
+      - name: Tests
+        run: make test

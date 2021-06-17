@@ -9,59 +9,33 @@ use function Differ\differenceFiles\genDiff;
 
 class GendiffTest extends TestCase
 {
-    public function testDifferenceFilesRelativePath()
+    public function testDifferenceFilesRelativePath(): void
     {
-        $filePath1 = 'jsonFiles/file1.json';
-        $filePath2 = 'jsonFiles/file2.json';
+        $filePath1 = 'tests/fixtures/file1.json';
+        $filePath2 = 'tests/fixtures/file2.json';
 
-        $expected =
-            '{
-                - follow: false
-                  host: hexlet.io
-                - proxy: 123.234.53.22
-                - timeout: 50
-                + timeout: 20
-                + verbose: true
-            }';
+        $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt');
 
         $this->assertEquals($expected, genDiff($filePath1, $filePath2));
     }
 
-    public function testDifferenceFilesAbsolutePath()
+    public function testDifferenceFilesAbsolutePath(): void
     {
-        $filePath1 = 'jsonFiles/file1.json';
-        $filePath2 = 'jsonFiles/file2.json';
-
-        $expected =
-            '{
-                - follow: false
-                  host: hexlet.io
-                - proxy: 123.234.53.22
-                - timeout: 50
-                + timeout: 20
-                + verbose: true
-            }';
+        $filePath1 = __DIR__ . '/fixtures/file1.json';
+        $filePath2 = __DIR__ . '/fixtures/file2.json';
+        
+        $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt');
 
         $this->assertEquals($expected, genDiff($filePath1, $filePath2));
     }
 
-    // public function testDifferenceFilesNonexistentPath()
-    // {
-    //     $filePath1 = '/json/file1.json';
-    //     $filePath2 = '/json/file2.json';
+    public function testEmptyFiles()
+    {
+        $filePath1 = __DIR__ . '/fixtures/fileEmpty1.json';
+        $filePath2 = __DIR__ . '/fixtures/fileEmpty2.json';
 
-    //     $expected =
-    //         '{
-    //             - follow: false
-    //               host: hexlet.io
-    //             - proxy: 123.234.53.22
-    //             - timeout: 50
-    //             + timeout: 20
-    //             + verbose: true
-    //         }';
+        $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichEmptyFiles.json');
 
-    //     $this->expectException(Exception::class);
-
-    //     $this->assertEquals($expected, genDiff($filePath1, $filePath2));
-    // }
+        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+    }
 }

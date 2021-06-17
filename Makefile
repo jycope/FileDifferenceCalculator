@@ -8,4 +8,4 @@ test:
 	composer run-script phpunit -- --colors=always tests
 
 lint:
-	composer run-script phpcs -- --standard=PSR12 src tests
+	composer exec --verbose phpcs -- --standard=PSR12 src bin tests
