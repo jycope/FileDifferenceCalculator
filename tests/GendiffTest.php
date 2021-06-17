@@ -23,7 +23,7 @@ class GendiffTest extends TestCase
     {
         $filePath1 = __DIR__ . '/fixtures/file1.json';
         $filePath2 = __DIR__ . '/fixtures/file2.json';
-        
+
         $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt');
 
         $this->assertEquals($expected, genDiff($filePath1, $filePath2));

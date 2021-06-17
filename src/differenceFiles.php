@@ -16,7 +16,7 @@ function convertedToJson(array $array): string
         $result .= "{$stateFile} {$key}: {$value}\n";
     }
 
-    return "{\n" . $result . "}"; 
+    return "{\n" . $result . "}";
 }
 
 function genDiff(string $pathFile1, string $pathFile2): string
