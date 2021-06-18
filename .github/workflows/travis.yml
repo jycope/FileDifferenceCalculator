@@ -8,28 +8,17 @@ on:
 
 jobs:
   build:
-
-    # The type of machine to run the job on
-    runs-on: ubuntu-latest
-
-    steps:
-      # Check-out repository under GitHub workspace
-      # https://github.com/actions/checkout
-      - uses: actions/checkout@v2
-      - name: Run test & publish code coverage
-        uses: paambaati/codeclimate-action@v2.6.0
-        # Add Code Climate secret key
-        env:
-          global:
-            - CC_TEST_REPORTER_ID=ABC123
-        language: ruby
-        rvm:
-          - 2.2.0
-        before_script:
-          - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > cc-test-reporter
-          - chmod +x ./cc-test-reporter
-          - ./cc-test-reporter before-build
-        script:
-          - bundle exec rspec
-        after_script:
-          - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+    env:
+      global:
+        - CC_TEST_REPORTER_ID=ABC123
+    language: ruby
+    rvm:
+      - 2.2.0
+    before_script:
+      - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > cc-test-reporter
+      - chmod +x ./cc-test-reporter
+      - ./cc-test-reporter before-build
+    script:
+      - bundle exec rspec
+    after_script:
+      - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
