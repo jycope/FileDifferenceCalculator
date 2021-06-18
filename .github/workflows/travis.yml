@@ -15,7 +15,6 @@ jobs:
       env:
         global:
           - CC_TEST_REPORTER_ID=ABC123
-      language: ruby
       rvm:
         - 2.2.0
       before_script:
