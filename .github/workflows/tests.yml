@@ -12,3 +12,6 @@ jobs:
 
       - name: Tests
         run: make test
+
+      - name: Coverage
+        run: make test-coverage
