@@ -5,7 +5,7 @@ autoload:
 		composer dump-autoload
 
 test:
-		composer run-script phpunit -- --colors=always tests --coverage-html coverage
+		composer run-script phpunit -- --colors=always tests --coverage-text coverage
 
 lint:
 		composer exec --verbose phpcs -- --standard=PSR12 src bin tests
