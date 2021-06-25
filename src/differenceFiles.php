@@ -2,7 +2,9 @@
 
 namespace Differ\differenceFiles;
 
-use function Functional\sort;
+use Symfony\Component\Yaml\Yaml;
+
+use function Differ\Parsers\getDataFromFile;
 
 function convertedToJson(array $array): string
 {
@@ -21,27 +23,32 @@ function convertedToJson(array $array): string
 
 function genDiff(string $pathFile1, string $pathFile2): string
 {
-    $json1 = json_decode(file_get_contents($pathFile1), true);
-    $json2 = json_decode(file_get_contents($pathFile2), true);
+    $file1 = getDataFromFile($pathFile1);
+    $file2 = getDataFromFile($pathFile2);
+
+    if (empty($file1) && empty($file2)) {
+        return "{\n}";
+    }
+
     $result = [];
-    $mergedFiles = array_merge($json1, $json2);
+    $mergedFiles = array_merge($file1, $file2);
 
     ksort($mergedFiles);
 
     foreach ($mergedFiles as $key => $value) {
         $value = is_bool($value) ? ($value === true ? 'true' : 'false') : $value;
 
-        $isKeyContainsTwoFiles = array_key_exists($key, $json1) && array_key_exists($key, $json2);
-        $isKeyContainsOnlFirstFile = array_key_exists($key, $json1) && !array_key_exists($key, $json2);
-        $isKeyContainsOnlySecondFile = !array_key_exists($key, $json1) && array_key_exists($key, $json2);
+        $isKeyContainsTwoFiles = array_key_exists($key, $file1) && array_key_exists($key, $file2);
+        $isKeyContainsOnlFirstFile = array_key_exists($key, $file1) && !array_key_exists($key, $file2);
+        $isKeyContainsOnlySecondFile = !array_key_exists($key, $file1) && array_key_exists($key, $file2);
 
         $emptySecondFileValue = ' - ' . $key;
         $emptyFirstFileValue = ' + ' . $key;
         $keyEmpty = '   ' . $key;
 
         if ($isKeyContainsTwoFiles) {
-            $valueFirstFile = $json1[$key];
-            $valueSecondFile = $json2[$key];
+            $valueFirstFile = $file1[$key];
+            $valueSecondFile = $file2[$key];
 
             if ($valueFirstFile === $valueSecondFile) {
                 $result[$keyEmpty] = $value;

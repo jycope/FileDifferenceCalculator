@@ -3,6 +3,7 @@
 namespace Differ\info;
 
 use Docopt;
+
 use function Differ\differenceFiles\genDiff;
 
 function getInfo()
@@ -20,8 +21,8 @@ function getInfo()
         -v --version                  Show version
         --format <fmt>                Report format [default: stylish]
     DOC;
-    
-    $args = Docopt::handle($doc, array('version'=>'Naval Fate 2.0'));
+
+    $args = Docopt::handle($doc, array('version' => 'Naval Fate 2.0'));
 
     $filePath1 = $args['<firstFile>'];
     $filePath2 = $args['<secondFile>'];

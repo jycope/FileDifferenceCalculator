@@ -9,13 +9,15 @@
     "bin": ["bin/gendiff"],
     "require": {
         "docopt/docopt": "^1.0",
-        "lstrojny/functional-php": "^1.17"
+        "lstrojny/functional-php": "^1.17",
+        "symfony/yaml": "^5.3"
     },
     "autoload": {
         "files": [
             "vendor/docopt/docopt/src/docopt.php",
             "src/info.php",
-            "src/differenceFiles.php"
+            "src/differenceFiles.php",
+            "src/parser.php"
         ]
     },
     "scripts": {
