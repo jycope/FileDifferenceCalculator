@@ -12,6 +12,5 @@ if (file_exists($autoloadPath1)) {
 
 use function Differ\info\getInfo;
 
-foreach (getInfo() as $option => $description) {
-  echo $option . ': ' . json_encode($description) . PHP_EOL;
-}
+getInfo();
+

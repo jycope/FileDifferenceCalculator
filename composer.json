@@ -6,6 +6,7 @@
             "email": "dmitriy.nikolaev1337@gmail.com"
         }
     ],
+    "bin": ["bin/gendiff"],
     "require": {
         "docopt/docopt": "^1.0",
         "lstrojny/functional-php": "^1.17"
