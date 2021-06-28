@@ -58,4 +58,14 @@ class GendiffTest extends TestCase
 
         $this->assertEquals($expected, genDiff($filePath1, $filePath2));
     }
+
+    public function testDifferenceNestedFiles(): void
+    {
+        $filePath1 = 'tests/fixtures/json/fileNested1.json';
+        $filePath2 = 'tests/fixtures/json/fileNested2.json';
+
+        $expected = file_get_contents('tests/fixtures/expectedWhichNestedFilesTest.txt');
+
+        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+    }
 }
