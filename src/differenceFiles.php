@@ -6,25 +6,34 @@ use Symfony\Component\Yaml\Yaml;
 
 use function Differ\Parsers\getDataFromFile;
 
-function convertedToJson(array $array): string
+function convertedToJson(array $array, $depthValue = 0): string
 {
     $result = '';
+    $leftIndentForValue   = str_repeat('    ', $depthValue);
+    $leftIndentForBracket = str_repeat('    ', $depthValue);
 
     foreach ($array as $key => $value) {
-        $operatorChanged = explode(' ', $key)[1];
+        // $operatorChanged = explode(' ', $key)[1];
+        // $value = is_array($value) ? convertedToJson($value): $value;
+        // print_r(json_decode($value));
+        // print_r($value);
+        // $value = is_array($value) ? json_encode($value): $value;
 
-        $stateFile = $operatorChanged === ('-' || '+') ? $operatorChanged : '';
+        // print_r("\n");
+        // print_r($key);
+        // print_r($depth);
+        // $stateFile = $operatorChanged === ('-' || '+') ? $operatorChanged : '';
 
-        $result .= "{$stateFile} {$key}: {$value}\n";
+        $result .= "{$leftIndentForValue}{$key}: {$value}\n";
     }
 
-    return "{\n" . $result . "}";
+    return "{\n" . $result . "{$leftIndentForBracket}}";
 }
 
-function genDiff($pathFile1, $pathFile2): string
+function genDiff($pathFile1, $pathFile2, $depth = 0)
 {
-    $data1 =  is_file($pathFile1) ? getDataFromFile($pathFile1): $pathFile1;
-    $data2 =  is_file($pathFile2) ? getDataFromFile($pathFile2): $pathFile2;
+    $data1 = is_array($pathFile1) ? $pathFile1: getDataFromFile($pathFile1);
+    $data2 = is_array($pathFile2) ? $pathFile2: getDataFromFile($pathFile2);
 
     if (empty($data1) && empty($data2)) {
         return "{\n}";
@@ -41,17 +50,11 @@ function genDiff($pathFile1, $pathFile2): string
         $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
         $isKeyContainsOnlFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
         $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
-        $isKeyHaveTwoFilesArray = function () use ($isKeyContainsTwoFiles, $data1, $data2) {
-            if ($isKeyContainsTwoFiles) {
-                if (is_array($data[$key1]) && is_array($data[$key2])) {
-                    return true;
-                }
-            }
-        };
 
-        $emptySecondFileValue = ' - ' . $key;
-        $emptyFirstFileValue = ' + ' . $key;
-        $keyEmpty = '   ' . $key;
+        // $leftIndent = str_repeat('    ', $depth);
+        $emptySecondFileValue = '- ' . $key;
+        $emptyFirstFileValue = '+ ' . $key;
+        $keyEmpty = '  ' . $key;
 
         // if ($isKeyHaveTwoFilesArray) {
         //     // $result[$key] = genDiff($data1[$key], $data2[$key]);
@@ -61,18 +64,15 @@ function genDiff($pathFile1, $pathFile2): string
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
-
-            if ($valueFirstFile === $valueSecondFile) {
+            
+            if (is_array($value)) {
+                $result[$key] = genDiff($valueFirstFile, $valueSecondFile, $depth + 1);
+            } elseif ($valueFirstFile === $valueSecondFile) {
                 $result[$keyEmpty] = $value;
             } elseif ($valueFirstFile !== $valueSecondFile) {
                 $result[$emptySecondFileValue] = $valueFirstFile;
                 $result[$emptyFirstFileValue] = $value;
             }
-
-            if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
-                $result[$key] = genDiff($data1[$key], $data2[$key]);
-            }
-
 
         } elseif ($isKeyContainsOnlySecondFile) {
             $result[$emptyFirstFileValue] = $value;
@@ -81,5 +81,7 @@ function genDiff($pathFile1, $pathFile2): string
         }
     }
 
-    return convertedToJson($result);
+    // print_r($result);
+
+    return $result;
 }
