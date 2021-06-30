@@ -6,13 +6,13 @@ use Symfony\Component\Yaml\Yaml;
 
 use function Differ\Parsers\getDataFromFile;
 
-function convertedToJson(array $array, $depthValue = 0): string
+function convertedToJson(array $array, $depth = 0): string
 {
-    $result = '';
-    $leftIndentForValue   = str_repeat('    ', $depthValue);
-    $leftIndentForBracket = str_repeat('    ', $depthValue);
+    // $result = '';
+    // $leftIndentForValue   = str_repeat('  ', $depth);
+    // $leftIndentForBracket = str_repeat('  ', $depth);
 
-    foreach ($array as $key => $value) {
+    // foreach ($array as $key => $value) {
         // $operatorChanged = explode(' ', $key)[1];
         // $value = is_array($value) ? convertedToJson($value): $value;
         // print_r(json_decode($value));
@@ -24,10 +24,24 @@ function convertedToJson(array $array, $depthValue = 0): string
         // print_r($depth);
         // $stateFile = $operatorChanged === ('-' || '+') ? $operatorChanged : '';
 
-        $result .= "{$leftIndentForValue}{$key}: {$value}\n";
-    }
+        // $result .= "{$key}: {$value}\n";
+    // }
 
-    return "{\n" . $result . "{$leftIndentForBracket}}";
+    $dataFormattedToJson = json_encode(
+        $array,
+        JSON_NUMERIC_CHECK|
+        JSON_FORCE_OBJECT|
+        JSON_PRESERVE_ZERO_FRACTION|
+        JSON_UNESCAPED_SLASHES|
+        JSON_UNESCAPED_UNICODE|
+        JSON_PRETTY_PRINT
+    );
+
+    $formattedJson = str_replace(["\"", ','], '', $dataFormattedToJson);
+
+    return $formattedJson;
+
+    // return "{\n" . $result . "}";
 }
 
 function genDiff($pathFile1, $pathFile2, $depth = 0)
@@ -66,7 +80,7 @@ function genDiff($pathFile1, $pathFile2, $depth = 0)
             $valueSecondFile = $data2[$key];
             
             if (is_array($value)) {
-                $result[$key] = genDiff($valueFirstFile, $valueSecondFile, $depth + 1);
+                $result[$keyEmpty] = genDiff($valueFirstFile, $valueSecondFile, $depth + 1);
             } elseif ($valueFirstFile === $valueSecondFile) {
                 $result[$keyEmpty] = $value;
             } elseif ($valueFirstFile !== $valueSecondFile) {

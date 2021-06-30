@@ -5,6 +5,7 @@ namespace Differ\info;
 use Docopt;
 
 use function Differ\differenceFiles\genDiff;
+use function Differ\differenceFiles\convertedToJson;
 
 function getInfo()
 {
@@ -27,5 +28,5 @@ function getInfo()
     $filePath1 = $args['<firstFile>'];
     $filePath2 = $args['<secondFile>'];
 
-    return genDiff($filePath1, $filePath2);
+    return convertedToJson(genDiff($filePath1, $filePath2));
 }
