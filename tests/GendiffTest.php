@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Differ\differenceFiles\genDiff;
 
 use function Differ\differenceFiles\genDiff;
+use function Differ\differenceFiles\convertedToJson;
 
 class GendiffTest extends TestCase
 {
@@ -16,7 +17,7 @@ class GendiffTest extends TestCase
 
         $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt');
 
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2)));
     }
 
     public function testDifferenceJsonFilesAbsolutePath(): void
@@ -26,7 +27,7 @@ class GendiffTest extends TestCase
 
         $expected = file_get_contents('tests/fixtures/expectedWhichPathTest.txt');
 
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2)));
     }
 
     public function testEmptyJsonFiles(): void
@@ -46,7 +47,7 @@ class GendiffTest extends TestCase
 
         $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt');
 
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2)));
     }
 
     public function testDifferenceYamlFilesAbsolutePath(): void
@@ -66,6 +67,6 @@ class GendiffTest extends TestCase
 
         $expected = file_get_contents('tests/fixtures/expectedWhichNestedFilesTest.txt');
 
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2)));
     }
 }

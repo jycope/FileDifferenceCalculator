@@ -8,13 +8,13 @@ use function Differ\Parsers\getDataFromFile;
 
 function convertedToJson(array $array, $depth = 0): string
 {
-    // $result = '';
-    // $leftIndentForValue   = str_repeat('  ', $depth);
-    // $leftIndentForBracket = str_repeat('  ', $depth);
+    $result = '';
+    $leftIndentForValue   = str_repeat('  ', $depth);
+    $leftIndentForBracket = str_repeat('  ', $depth - 1);
 
-    // foreach ($array as $key => $value) {
+    foreach ($array as $key => $value) {
         // $operatorChanged = explode(' ', $key)[1];
-        // $value = is_array($value) ? convertedToJson($value): $value;
+        $value = is_array($value) ? convertedToJson($value, $depth + 2): $value;
         // print_r(json_decode($value));
         // print_r($value);
         // $value = is_array($value) ? json_encode($value): $value;
@@ -24,24 +24,24 @@ function convertedToJson(array $array, $depth = 0): string
         // print_r($depth);
         // $stateFile = $operatorChanged === ('-' || '+') ? $operatorChanged : '';
 
-        // $result .= "{$key}: {$value}\n";
-    // }
+        $result .= "{$leftIndentForValue}{$key}: {$value}\n";
+    }
 
-    $dataFormattedToJson = json_encode(
-        $array,
-        JSON_NUMERIC_CHECK|
-        JSON_FORCE_OBJECT|
-        JSON_PRESERVE_ZERO_FRACTION|
-        JSON_UNESCAPED_SLASHES|
-        JSON_UNESCAPED_UNICODE|
-        JSON_PRETTY_PRINT
-    );
+    // $dataFormattedToJson = json_encode(
+    //     $array,
+    //     JSON_NUMERIC_CHECK|
+    //     JSON_FORCE_OBJECT|
+    //     JSON_PRESERVE_ZERO_FRACTION|
+    //     JSON_UNESCAPED_SLASHES|
+    //     JSON_UNESCAPED_UNICODE|
+    //     JSON_PRETTY_PRINT
+    // );
 
-    $formattedJson = str_replace(["\"", ','], '', $dataFormattedToJson);
+    // $formattedJson = str_replace(["\"", ','], '', $dataFormattedToJson);
 
-    return $formattedJson;
+    // return $formattedJson;
 
-    // return "{\n" . $result . "}";
+    return "{\n" . $result . "{$leftIndentForBracket}}";
 }
 
 function genDiff($pathFile1, $pathFile2, $depth = 0)
