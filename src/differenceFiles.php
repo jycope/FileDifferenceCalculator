@@ -1,10 +1,11 @@
 <?php
 
-namespace Differ\differenceFiles;
+namespace Differ\DifferenceFiles;
 
 use Symfony\Component\Yaml\Yaml;
 
-use function Differ\Parsers\getDataFromFile;
+use function Differ\Formatters\formattedDefault;
+use function Differ\Formatters\formattedPlain;
 
 function convertedToJson(array $array, $depth = 0): string
 {
@@ -44,58 +45,11 @@ function convertedToJson(array $array, $depth = 0): string
     return "{\n" . $result . "{$leftIndentForBracket}}";
 }
 
-function genDiff($pathFile1, $pathFile2, $depth = 0)
-{
-    $data1 = is_array($pathFile1) ? $pathFile1: getDataFromFile($pathFile1);
-    $data2 = is_array($pathFile2) ? $pathFile2: getDataFromFile($pathFile2);
-
-    if (empty($data1) && empty($data2)) {
-        return "{\n}";
+function genDiff($pathFile1, $pathFile2, $format, $depth = 0)
+{   
+    if ($format === 'plain') {
+        return formattedPlain($pathFile1, $pathFile2, $format);
     }
 
-    $result = [];
-    $mergedFiles = array_merge($data1, $data2);
-
-    ksort($mergedFiles);
-
-    foreach ($mergedFiles as $key => $value) {
-        $value = is_bool($value) ? ($value === true ? 'true' : 'false') : $value;
-
-        $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
-        $isKeyContainsOnlFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
-        $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
-
-        // $leftIndent = str_repeat('    ', $depth);
-        $emptySecondFileValue = '- ' . $key;
-        $emptyFirstFileValue = '+ ' . $key;
-        $keyEmpty = '  ' . $key;
-
-        // if ($isKeyHaveTwoFilesArray) {
-        //     // $result[$key] = genDiff($data1[$key], $data2[$key]);
-        //     print_r($data1);
-        // }
-
-        if ($isKeyContainsTwoFiles) {
-            $valueFirstFile = $data1[$key];
-            $valueSecondFile = $data2[$key];
-            
-            if (is_array($value)) {
-                $result[$keyEmpty] = genDiff($valueFirstFile, $valueSecondFile, $depth + 1);
-            } elseif ($valueFirstFile === $valueSecondFile) {
-                $result[$keyEmpty] = $value;
-            } elseif ($valueFirstFile !== $valueSecondFile) {
-                $result[$emptySecondFileValue] = $valueFirstFile;
-                $result[$emptyFirstFileValue] = $value;
-            }
-
-        } elseif ($isKeyContainsOnlySecondFile) {
-            $result[$emptyFirstFileValue] = $value;
-        } elseif ($isKeyContainsOnlFirstFile) {
-            $result[$emptySecondFileValue] = $value;
-        }
-    }
-
-    // print_r($result);
-
-    return $result;
+    return formattedDefault($pathFile1, $pathFile2, $format, $depth);
 }

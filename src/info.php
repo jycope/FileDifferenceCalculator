@@ -1,11 +1,11 @@
 <?php
 
-namespace Differ\info;
+namespace Differ\Info;
 
 use Docopt;
 
-use function Differ\differenceFiles\genDiff;
-use function Differ\differenceFiles\convertedToJson;
+use function Differ\DifferenceFiles\genDiff;
+use function Differ\DifferenceFiles\convertedToJson;
 
 function getInfo()
 {
@@ -27,6 +27,7 @@ function getInfo()
 
     $filePath1 = $args['<firstFile>'];
     $filePath2 = $args['<secondFile>'];
-
-    return convertedToJson(genDiff($filePath1, $filePath2));
+    $format    = $args['--format'];
+    
+    return genDiff($filePath1, $filePath2, $format);
 }

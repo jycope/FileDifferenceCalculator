@@ -3,10 +3,10 @@
 namespace Differ\tests\GendiffTest;
 
 use PHPUnit\Framework\TestCase;
-use Differ\differenceFiles\genDiff;
+use Differ\DifferenceFiles\genDiff;
 
-use function Differ\differenceFiles\genDiff;
-use function Differ\differenceFiles\convertedToJson;
+use function Differ\DifferenceFiles\genDiff;
+use function Differ\DifferenceFiles\convertedToJson;
 
 class GendiffTest extends TestCase
 {
@@ -68,5 +68,15 @@ class GendiffTest extends TestCase
         $expected = file_get_contents('tests/fixtures/expectedWhichNestedFilesTest.txt');
 
         $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2)));
+    }
+
+    public function testPlainFormat(): void
+    {
+        $filePath1 = 'tests/fixtures/json/fileNested1.json';
+        $filePath2 = 'tests/fixtures/json/fileNested2.json';
+
+        $expected = file_get_contents('tests/fixtures/expectedWhichNestedFilesTest.txt');
+
+        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2, 'plain')));
     }
 }

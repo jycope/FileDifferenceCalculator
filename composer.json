@@ -15,9 +15,10 @@
     "autoload": {
         "files": [
             "vendor/docopt/docopt/src/docopt.php",
-            "src/info.php",
-            "src/differenceFiles.php",
-            "src/parser.php"
+            "src/Info.php",
+            "src/DifferenceFiles.php",
+            "src/Parser.php",
+            "src/Formatters.php"
         ]
     },
     "scripts": {
