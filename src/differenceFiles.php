@@ -13,11 +13,11 @@ function convertedToJson(array $array)
 {
     return str_replace(["\"", ","], "", json_encode(
         $array,
-        JSON_NUMERIC_CHECK|
-        JSON_FORCE_OBJECT|
-        JSON_PRESERVE_ZERO_FRACTION|
-        JSON_UNESCAPED_SLASHES|
-        JSON_UNESCAPED_UNICODE|
+        JSON_NUMERIC_CHECK |
+        JSON_FORCE_OBJECT |
+        JSON_PRESERVE_ZERO_FRACTION |
+        JSON_UNESCAPED_SLASHES |
+        JSON_UNESCAPED_UNICODE |
         JSON_PRETTY_PRINT
     ));
 }

@@ -28,6 +28,6 @@ function getInfo()
     $filePath1 = $args['<firstFile>'];
     $filePath2 = $args['<secondFile>'];
     $format    = $args['--format'];
-    
+
     return genDiff($filePath1, $filePath2, $format);
 }

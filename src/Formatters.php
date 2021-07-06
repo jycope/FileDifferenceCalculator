@@ -6,8 +6,8 @@ use function Differ\Parsers\getDataFromFile;
 
 function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0)
 {
-    $data1 = is_array($pathFile1) ? $pathFile1: getDataFromFile($pathFile1);
-    $data2 = is_array($pathFile2) ? $pathFile2: getDataFromFile($pathFile2);
+    $data1 = is_array($pathFile1) ? $pathFile1 : getDataFromFile($pathFile1);
+    $data2 = is_array($pathFile2) ? $pathFile2 : getDataFromFile($pathFile2);
 
     if (empty($data1) && empty($data2)) {
         return [];
@@ -32,7 +32,7 @@ function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0)
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
-            
+
             if (is_array($value)) {
                 $result[$keyEmpty] = formattedDefault($valueFirstFile, $valueSecondFile, $format, $depth + 1);
             } elseif ($valueFirstFile === $valueSecondFile) {
@@ -41,21 +41,20 @@ function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0)
                 $result[$emptySecondFileValue] = $valueFirstFile;
                 $result[$emptyFirstFileValue] = $value;
             }
-
         } elseif ($isKeyContainsOnlySecondFile) {
             $result[$emptyFirstFileValue] = $value;
         } elseif ($isKeyContainsOnlyFirstFile) {
             $result[$emptySecondFileValue] = $value;
         }
     }
-    
+
     return $result;
 }
 
 function formattedPlain($pathFile1, $pathFile2, $format, $path = "")
 {
-    $data1 = is_array($pathFile1) ? $pathFile1: getDataFromFile($pathFile1);
-    $data2 = is_array($pathFile2) ? $pathFile2: getDataFromFile($pathFile2);
+    $data1 = is_array($pathFile1) ? $pathFile1 : getDataFromFile($pathFile1);
+    $data2 = is_array($pathFile2) ? $pathFile2 : getDataFromFile($pathFile2);
 
     if (empty($data1) && empty($data2)) {
         return [];
@@ -81,16 +80,15 @@ function formattedPlain($pathFile1, $pathFile2, $format, $path = "")
             if (is_array($value)) {
                 $result .= formattedPlain($valueFirstFile, $valueSecondFile, $format, $currentPath . ".");
             } elseif ($valueFirstFile !== $valueSecondFile) {
-                $valueFirstFile = is_array($valueFirstFile) ? '[complex value]': "'" . $data1[$key] . "'";
-                $valueSecondFile = is_array($valueSecondFile) ? '[complex value]': "'" . $data2[$key] . "'";
+                $valueFirstFile = is_array($valueFirstFile) ? '[complex value]' : "'" . $data1[$key] . "'";
+                $valueSecondFile = is_array($valueSecondFile) ? '[complex value]' : "'" . $data2[$key] . "'";
 
                 $result .= "Property '{$currentPath}' was updated. From {$valueFirstFile} to {$valueSecondFile}\n";
             }
-
         } elseif ($isKeyContainsOnlyFirstFile) {
             $result .= "Property '{$currentPath}' was removed\n";
         } elseif ($isKeyContainsOnlySecondFile) {
-            $value = is_array($value) ? '[complex value]': $value;
+            $value = is_array($value) ? '[complex value]' : $value;
             $result .= "Property '{$currentPath}' was added with value: {$value}\n";
         }
     }
@@ -100,8 +98,8 @@ function formattedPlain($pathFile1, $pathFile2, $format, $path = "")
 
 function formattedJson($pathFile1, $pathFile2, $format, $path = "")
 {
-    $data1 = is_array($pathFile1) ? $pathFile1: getDataFromFile($pathFile1);
-    $data2 = is_array($pathFile2) ? $pathFile2: getDataFromFile($pathFile2);
+    $data1 = is_array($pathFile1) ? $pathFile1 : getDataFromFile($pathFile1);
+    $data2 = is_array($pathFile2) ? $pathFile2 : getDataFromFile($pathFile2);
 
     if (empty($data1) && empty($data2)) {
         return "{\n}";
@@ -126,7 +124,7 @@ function formattedJson($pathFile1, $pathFile2, $format, $path = "")
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
-            
+
             if (is_array($value)) {
                 $result[$keyEmpty] = formattedJson($valueFirstFile, $valueSecondFile, $format);
             } elseif ($valueFirstFile === $valueSecondFile) {
@@ -135,13 +133,12 @@ function formattedJson($pathFile1, $pathFile2, $format, $path = "")
                 $result[$emptySecondFileValue] = $valueFirstFile;
                 $result[$emptyFirstFileValue] = $value;
             }
-
         } elseif ($isKeyContainsOnlySecondFile) {
             $result[$emptyFirstFileValue] = $value;
         } elseif ($isKeyContainsOnlyFirstFile) {
             $result[$emptySecondFileValue] = $value;
         }
     }
-    
+
     return $result;
 }
