@@ -17,7 +17,7 @@ class GendiffTest extends TestCase
 
         $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt');
 
-        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2)));
+        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
     }
 
     public function testDifferenceJsonFilesAbsolutePath(): void
@@ -27,7 +27,7 @@ class GendiffTest extends TestCase
 
         $expected = file_get_contents('tests/fixtures/expectedWhichPathTest.txt');
 
-        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2)));
+        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
     }
 
     public function testEmptyJsonFiles(): void
@@ -47,7 +47,7 @@ class GendiffTest extends TestCase
 
         $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt');
 
-        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2)));
+        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
     }
 
     public function testDifferenceYamlFilesAbsolutePath(): void
@@ -67,7 +67,7 @@ class GendiffTest extends TestCase
 
         $expected = file_get_contents('tests/fixtures/expectedWhichNestedFilesTest.txt');
 
-        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2)));
+        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
     }
 
     public function testPlainFormat(): void
@@ -75,8 +75,8 @@ class GendiffTest extends TestCase
         $filePath1 = 'tests/fixtures/json/fileNested1.json';
         $filePath2 = 'tests/fixtures/json/fileNested2.json';
 
-        $expected = file_get_contents('tests/fixtures/expectedWhichNestedFilesTest.txt');
+        $expected = file_get_contents('tests/fixtures/expectedWhichPlainFormat.txt');
 
-        $this->assertEquals($expected, convertedToJson(genDiff($filePath1, $filePath2, 'plain')));
+        $this->assertEquals($expected, genDiff($filePath1, $filePath2, 'plain'));
     }
 }

@@ -9,3 +9,6 @@
 **YAML**
 [![asciicast](https://asciinema.org/a/0qq3t5kt99yicczrmajc8GEXn.svg)](https://asciinema.org/a/0qq3t5kt99yicczrmajc8GEXn)
 
+
+**Format plain**
+[![asciicast](https://asciinema.org/a/0INzxAC44PlDupiLDnne6vvuQ.svg)](https://asciinema.org/a/0INzxAC44PlDupiLDnne6vvuQ)

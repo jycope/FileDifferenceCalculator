@@ -4,13 +4,13 @@ namespace Differ\Formatters;
 
 use function Differ\Parsers\getDataFromFile;
 
-function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0): array
+function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0)
 {
     $data1 = is_array($pathFile1) ? $pathFile1: getDataFromFile($pathFile1);
     $data2 = is_array($pathFile2) ? $pathFile2: getDataFromFile($pathFile2);
 
     if (empty($data1) && empty($data2)) {
-        return "{\n}";
+        return [];
     }
 
     $result = [];
@@ -58,7 +58,7 @@ function formattedPlain($pathFile1, $pathFile2, $format, $path = "")
     $data2 = is_array($pathFile2) ? $pathFile2: getDataFromFile($pathFile2);
 
     if (empty($data1) && empty($data2)) {
-        return "{\n}";
+        return [];
     }
 
     $mergedFiles = array_merge($data1, $data2);
@@ -68,7 +68,7 @@ function formattedPlain($pathFile1, $pathFile2, $format, $path = "")
 
     foreach ($mergedFiles as $key => $value) {
         $value = is_bool($value) ? ($value === true ? 'true' : 'false') : $value;
-        $currentPath = $path . "." . $key;
+        $currentPath = $path . $key;
 
         $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
         $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
@@ -79,42 +79,69 @@ function formattedPlain($pathFile1, $pathFile2, $format, $path = "")
             $valueSecondFile = $data2[$key];
 
             if (is_array($value)) {
-                $result .= formattedPlain($valueFirstFile, $valueSecondFile, $format, $currentPath);
+                $result .= formattedPlain($valueFirstFile, $valueSecondFile, $format, $currentPath . ".");
             } elseif ($valueFirstFile !== $valueSecondFile) {
-                $result .= "{$currentPath} was updated. From {$valueFirstFile} to {$valueSecondFile}\n";
+                $valueFirstFile = is_array($valueFirstFile) ? '[complex value]': "'" . $data1[$key] . "'";
+                $valueSecondFile = is_array($valueSecondFile) ? '[complex value]': "'" . $data2[$key] . "'";
+
+                $result .= "Property '{$currentPath}' was updated. From {$valueFirstFile} to {$valueSecondFile}\n";
             }
 
         } elseif ($isKeyContainsOnlyFirstFile) {
-            $result .= "{$currentPath} was removed\n";
+            $result .= "Property '{$currentPath}' was removed\n";
         } elseif ($isKeyContainsOnlySecondFile) {
             $value = is_array($value) ? '[complex value]': $value;
-            $result .= "{$currentPath} was added with value: {$value}\n";
+            $result .= "Property '{$currentPath}' was added with value: {$value}\n";
         }
     }
 
     return $result;
 }
 
-// function getPath($pathFile1, $pathFile2, $format, $path = "")
-// {
-//     $data1 = is_array($pathFile1) ? $pathFile1: getDataFromFile($pathFile1);
-//     $data2 = is_array($pathFile2) ? $pathFile2: getDataFromFile($pathFile2);
+function formattedJson($pathFile1, $pathFile2, $format, $path = "")
+{
+    $data1 = is_array($pathFile1) ? $pathFile1: getDataFromFile($pathFile1);
+    $data2 = is_array($pathFile2) ? $pathFile2: getDataFromFile($pathFile2);
 
-//     $mergedFiles = array_merge($data1, $data2);
-//     $result = "";
+    if (empty($data1) && empty($data2)) {
+        return "{\n}";
+    }
 
-//     ksort($mergedFiles);
+    $result = [];
+    $mergedFiles = array_merge($data1, $data2);
 
-//     foreach ($mergedFiles as $key => $value) {
-//         $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
+    ksort($mergedFiles);
 
-//         if ($isKeyContainsTwoFiles) {
-//             $valueFirstFile = $data1[$key];
-//             $valueSecondFile = $data2[$key];
+    foreach ($mergedFiles as $key => $value) {
+        $value = is_bool($value) ? ($value === true ? 'true' : 'false') : $value;
+
+        $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
+        $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
+        $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
+
+        $emptySecondFileValue = '- ' . $key;
+        $emptyFirstFileValue = '+ ' . $key;
+        $keyEmpty = '  ' . $key;
+
+        if ($isKeyContainsTwoFiles) {
+            $valueFirstFile = $data1[$key];
+            $valueSecondFile = $data2[$key];
             
-//             $path .= getPath($valueFirstFile, $valueSecondFile, $format, $key);
-//         }
-//     }
-        
-//     return $path;
-// }
+            if (is_array($value)) {
+                $result[$keyEmpty] = formattedJson($valueFirstFile, $valueSecondFile, $format);
+            } elseif ($valueFirstFile === $valueSecondFile) {
+                $result[$keyEmpty] = $value;
+            } elseif ($valueFirstFile !== $valueSecondFile) {
+                $result[$emptySecondFileValue] = $valueFirstFile;
+                $result[$emptyFirstFileValue] = $value;
+            }
+
+        } elseif ($isKeyContainsOnlySecondFile) {
+            $result[$emptyFirstFileValue] = $value;
+        } elseif ($isKeyContainsOnlyFirstFile) {
+            $result[$emptySecondFileValue] = $value;
+        }
+    }
+    
+    return $result;
+}
