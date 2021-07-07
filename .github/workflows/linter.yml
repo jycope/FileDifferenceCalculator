@@ -10,5 +10,8 @@ jobs:
       - name: Install
         run: make install
 
+      - name: autoload
+        run: make autoload
+
       - name: check linter
         run: make lint

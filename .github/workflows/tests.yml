@@ -10,6 +10,9 @@ jobs:
       - name: Install
         run: make install
 
+      - name: autoload
+        run: make autoload
+
       - name: Tests
         run: make test
 
