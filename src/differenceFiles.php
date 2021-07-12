@@ -1,13 +1,13 @@
 <?php
 
-namespace Differ\DifferenceFiles;
+namespace Differ\Differ;
 
 use Symfony\Component\Yaml\Yaml;
 
 use function Differ\Formatters\formattedDefault;
 use function Differ\Formatters\formattedPlain;
 use function Differ\Formatters\formattedJson;
-use function Differ\DifferenceFiles\convertedToJson;
+use function Differ\Differ\convertedToJson;
 
 function convertedToJson(array $array)
 {

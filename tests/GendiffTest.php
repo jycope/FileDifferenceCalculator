@@ -3,10 +3,10 @@
 namespace Differ\tests\GendiffTest;
 
 use PHPUnit\Framework\TestCase;
-use Differ\DifferenceFiles\genDiff;
+use Differ\Differ\genDiff;
 
-use function Differ\DifferenceFiles\genDiff;
-use function Differ\DifferenceFiles\convertedToJson;
+use function Differ\Differ\genDiff;
+use function Differ\Differ\convertedToJson;
 
 class GendiffTest extends TestCase
 {

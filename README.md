@@ -12,3 +12,9 @@
 
 **Format plain**
 [![asciicast](https://asciinema.org/a/0INzxAC44PlDupiLDnne6vvuQ.svg)](https://asciinema.org/a/0INzxAC44PlDupiLDnne6vvuQ)
+
+**Nested**
+[![asciicast](https://asciinema.org/a/KTFyJL6mhaCfUoLN6Yc0wYGpI.svg)](https://asciinema.org/a/KTFyJL6mhaCfUoLN6Yc0wYGpI)
+
+**Output to JSON**
+[![asciicast](https://asciinema.org/a/At1Vw9ZCklMT4HQbnKOtTDwf3.svg)](https://asciinema.org/a/At1Vw9ZCklMT4HQbnKOtTDwf3)
