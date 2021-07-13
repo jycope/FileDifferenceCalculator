@@ -8,9 +8,12 @@ function getDataFromFile(string $filepath)
 {
     $fileExtension = substr($filepath, -4);
 
-    if ($fileExtension === 'json') {
-        return json_decode(file_get_contents($filepath), true);
+    switch ($fileExtension) {
+        case 'json':
+            return json_decode(file_get_contents($filepath), true);
+        case 'yaml':
+            return Yaml::parseFile($filepath);
+        default:
+            throw new \Exception('Ошибка в передаче файла');
     }
-
-    return Yaml::parseFile($filepath);
 }
