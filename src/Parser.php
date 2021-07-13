@@ -14,8 +14,6 @@ function getDataFromFile(string $filepath)
         case 'yaml':
             return Yaml::parseFile($filepath);
         default:
-            throw new \Exception('Ошибка в передаче файла');
+            return '{}';
     }
-
-    return '{}';
 }
