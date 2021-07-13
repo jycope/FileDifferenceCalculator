@@ -16,4 +16,6 @@ function getDataFromFile(string $filepath)
         default:
             throw new \Exception('Ошибка в передаче файла');
     }
+
+    return '{}';
 }
