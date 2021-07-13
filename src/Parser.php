@@ -13,7 +13,7 @@ function getDataFromFile(string $filepath)
             return json_decode(file_get_contents($filepath), true);
         case 'yaml':
             return Yaml::parseFile($filepath);
-        default:
-            return '{}';
     }
+
+    return [];
 }
