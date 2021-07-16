@@ -27,16 +27,15 @@ function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0)
 
         $emptySecondFileValue = '- ' . $key;
         $emptyFirstFileValue = '+ ' . $key;
-        $keyEmpty = '  ' . $key;
 
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
 
             if (is_array($value)) {
-                $result[$keyEmpty] = formattedDefault($valueFirstFile, $valueSecondFile, $format, $depth + 1);
+                $result[$key] = formattedDefault($valueFirstFile, $valueSecondFile, $format, $depth + 1);
             } elseif ($valueFirstFile === $valueSecondFile) {
-                $result[$keyEmpty] = $value;
+                $result[$key] = $value;
             } elseif ($valueFirstFile !== $valueSecondFile) {
                 $result[$emptySecondFileValue] = $valueFirstFile;
                 $result[$emptyFirstFileValue] = $value;
@@ -119,16 +118,16 @@ function formattedJson($pathFile1, $pathFile2, $format, $path = "")
 
         $emptySecondFileValue = '- ' . $key;
         $emptyFirstFileValue = '+ ' . $key;
-        $keyEmpty = '  ' . $key;
+        $key = '  ' . $key;
 
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
 
             if (is_array($value)) {
-                $result[$keyEmpty] = formattedJson($valueFirstFile, $valueSecondFile, $format);
+                $result[$key] = formattedJson($valueFirstFile, $valueSecondFile, $format);
             } elseif ($valueFirstFile === $valueSecondFile) {
-                $result[$keyEmpty] = $value;
+                $result[$key] = $value;
             } elseif ($valueFirstFile !== $valueSecondFile) {
                 $result[$emptySecondFileValue] = $valueFirstFile;
                 $result[$emptyFirstFileValue] = $value;
