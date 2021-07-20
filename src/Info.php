@@ -5,7 +5,6 @@ namespace Differ\Info;
 use Docopt;
 
 use function Differ\Differ\genDiff;
-use function Differ\Differ\convertedToJson;
 
 function getInfo()
 {

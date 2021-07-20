@@ -19,23 +19,22 @@ function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0)
     ksort($mergedFiles);
 
     foreach ($mergedFiles as $key => $value) {
-        $value = is_bool($value) ? ($value === true ? 'true' : 'false') : $value;
-
         $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
         $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
         $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
 
         $emptySecondFileValue = '- ' . $key;
         $emptyFirstFileValue = '+ ' . $key;
+        $keyEmpty = '* ' . $key;
 
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
 
             if (is_array($value)) {
-                $result[$key] = formattedDefault($valueFirstFile, $valueSecondFile, $format, $depth + 1);
+                $result[$keyEmpty] = formattedDefault($valueFirstFile, $valueSecondFile, $format, $depth + 1);
             } elseif ($valueFirstFile === $valueSecondFile) {
-                $result[$key] = $value;
+                $result[$keyEmpty] = $value;
             } elseif ($valueFirstFile !== $valueSecondFile) {
                 $result[$emptySecondFileValue] = $valueFirstFile;
                 $result[$emptyFirstFileValue] = $value;
@@ -101,7 +100,7 @@ function formattedJson($pathFile1, $pathFile2, $format, $path = "")
     $data2 = is_array($pathFile2) ? $pathFile2 : getDataFromFile($pathFile2);
 
     if (empty($data1) && empty($data2)) {
-        return "{\n}";
+        return [];
     }
 
     $result = [];
@@ -118,16 +117,16 @@ function formattedJson($pathFile1, $pathFile2, $format, $path = "")
 
         $emptySecondFileValue = '- ' . $key;
         $emptyFirstFileValue = '+ ' . $key;
-        $key = '  ' . $key;
+        $keyEmpty = '* ' . $key;
 
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
 
             if (is_array($value)) {
-                $result[$key] = formattedJson($valueFirstFile, $valueSecondFile, $format);
+                $result[$keyEmpty] = formattedDefault($valueFirstFile, $valueSecondFile, $format, $depth + 1);
             } elseif ($valueFirstFile === $valueSecondFile) {
-                $result[$key] = $value;
+                $result[$keyEmpty] = $value;
             } elseif ($valueFirstFile !== $valueSecondFile) {
                 $result[$emptySecondFileValue] = $valueFirstFile;
                 $result[$emptyFirstFileValue] = $value;

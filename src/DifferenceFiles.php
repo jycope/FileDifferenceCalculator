@@ -7,54 +7,38 @@ use Symfony\Component\Yaml\Yaml;
 use function Differ\Formatters\formattedDefault;
 use function Differ\Formatters\formattedPlain;
 use function Differ\Formatters\formattedJson;
-use function Differ\Differ\convertedToJson;
 
-function getProperties($array)
+function iterAst($data, $replacer = " ", $count = 2): string
 {
-    if (!is_array($array)) {        
-        return $array;
+    $result = "";
+    $indent = str_repeat($replacer, $count);
+
+    foreach ($data as $key => $value) {
+        if (is_array($value)) {
+            $firstSymbols = explode(" ", $key)[0];
+            $isSymboldChanged = $firstSymbols === "-" || $firstSymbols === "+" || $firstSymbols === "*";
+            $indentForBracket = $isSymboldChanged  ? str_repeat($replacer, $count + 2): $indent;
+
+            $result .= $indent . $key . ": {\n" . iterAst($value, $replacer, $count + 4) . $indentForBracket . "}\n";
+        } elseif (!is_array($value)) {
+            $value = var_export($value, true);
+
+            $result .= $indent . $key . ": " . $value . "\n";
+        }
     }
 
-    $properties = array_map(fn($child) => getProperties($child), $array);
-
-    return $properties;
+    return $result;
 }
 
-function convertedToJson($array)
+function iter(array $data)
 {
-    $filtered = array_filter($array, fn($child) => is_array($child));
+    $json = iterAst($data);
+    $search = ['* ', '\'', 'NULL'];
+    $replace =  ['  ', '', 'null'];
+    
+    $clearedData = str_replace($search, $replace, $json);
 
-    $result = array_map(function ($child) {
-        $key = key($child);
-        $child = str_replace(["\"", ","], "", json_encode(
-            getProperties($child),
-            JSON_PRETTY_PRINT
-        ));
-
-        if (is_array(getProperties($child))) {
-            return <<<EOT
-            $key: {
-                $child
-            }
-            EOT;
-        } elseif (is_string(getProperties($child))) {
-            $operatorChanged = explode(":", $key)[0];
-            
-            switch ($operatorChanged) {
-                case '-':
-                case '+':
-                    $child = str_replace("}", "  }", $child);
-                default:
-                    break;
-            }
-
-            return <<<EOT
-            $key: $child
-            EOT;
-        }
-    }, $filtered);
-
-    return $result;
+    return "{\n" . $json . "}";
 }
 
 function genDiff($pathFile1, $pathFile2, $format = "stylish")
@@ -63,8 +47,8 @@ function genDiff($pathFile1, $pathFile2, $format = "stylish")
         case 'plain':
             return formattedPlain($pathFile1, $pathFile2, $format);
         case 'json':
-            return convertedToJson(formattedJson($pathFile1, $pathFile2, $format));
+            return iter(formattedJson($pathFile1, $pathFile2, $format));
         default:
-            return convertedToJson(formattedDefault($pathFile1, $pathFile2, $format));
+            return iter(formattedDefault($pathFile1, $pathFile2, $format));
     }
 }
