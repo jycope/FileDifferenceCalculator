@@ -4,11 +4,19 @@ namespace Differ\Formatters;
 
 use function Differ\Parsers\getDataFromFile;
 
-function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0)
+function addOperatorToKeys($array)
 {
-    $data1 = is_array($pathFile1) ? $pathFile1 : getDataFromFile($pathFile1);
-    $data2 = is_array($pathFile2) ? $pathFile2 : getDataFromFile($pathFile2);
+    $result = [];
 
+    foreach ($array as $key => $value) {
+        $result["* " . $key] = is_array($value) ? addOperatorToKeys($value) : $value;
+    }
+
+    return $result;
+}
+
+function formattedDefault($data1, $data2, $format)
+{
     if (empty($data1) && empty($data2)) {
         return [];
     }
@@ -23,18 +31,17 @@ function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0)
         $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
         $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
 
-        $emptySecondFileValue = '- ' . $key;
-        $emptyFirstFileValue = '+ ' . $key;
-        $keyEmpty = '* ' . $key;
+        $emptySecondFileValue = str_replace("* ", "- ", $key);
+        $emptyFirstFileValue = str_replace("* ", "+ ", $key);
 
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
 
             if (is_array($value)) {
-                $result[$keyEmpty] = formattedDefault($valueFirstFile, $valueSecondFile, $format, $depth + 1);
+                $result[$key] = formattedDefault($valueFirstFile, $valueSecondFile, $format);
             } elseif ($valueFirstFile === $valueSecondFile) {
-                $result[$keyEmpty] = $value;
+                $result[$key] = $value;
             } elseif ($valueFirstFile !== $valueSecondFile) {
                 $result[$emptySecondFileValue] = $valueFirstFile;
                 $result[$emptyFirstFileValue] = $value;
@@ -49,11 +56,8 @@ function formattedDefault($pathFile1, $pathFile2, $format, $depth = 0)
     return $result;
 }
 
-function formattedPlain($pathFile1, $pathFile2, $format, $path = "")
+function formattedPlain($data1, $data2, $format, $path = "")
 {
-    $data1 = is_array($pathFile1) ? $pathFile1 : getDataFromFile($pathFile1);
-    $data2 = is_array($pathFile2) ? $pathFile2 : getDataFromFile($pathFile2);
-
     if (empty($data1) && empty($data2)) {
         return [];
     }
@@ -94,11 +98,8 @@ function formattedPlain($pathFile1, $pathFile2, $format, $path = "")
     return $result;
 }
 
-function formattedJson($pathFile1, $pathFile2, $format, $path = "")
+function formattedJson($data1, $data2, $format, $path = "")
 {
-    $data1 = is_array($pathFile1) ? $pathFile1 : getDataFromFile($pathFile1);
-    $data2 = is_array($pathFile2) ? $pathFile2 : getDataFromFile($pathFile2);
-
     if (empty($data1) && empty($data2)) {
         return [];
     }
