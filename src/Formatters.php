@@ -23,8 +23,8 @@ function formattedDefault($data1, $data2, $format)
 
     $result = [];
 
-    print_r($data1);
-    print_r($data2);
+    print_r(gettype($data1) === "boolean" ? $data1 : gettype($data1));
+    print_r(gettype($data2) === "boolean" ? $data2 : gettype($data2));
 
     $mergedFiles = array_merge($data1, $data2);
 
