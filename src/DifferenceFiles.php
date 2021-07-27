@@ -19,7 +19,7 @@ function iterAst($data, $replacer = " ", $count = 2): string
         if (is_array($value)) {
             $firstSymbols = explode(" ", $key)[0];
             $isSymboldChanged = $firstSymbols === "-" || $firstSymbols === "+" || $firstSymbols === "*";
-            $indentForBracket = $isSymboldChanged  ? str_repeat($replacer, $count + 2): $indent;
+            $indentForBracket = $isSymboldChanged  ? str_repeat($replacer, $count + 2) : $indent;
 
             $result .= $indent . $key . ": {\n" . iterAst($value, $replacer, $count + 4) . $indentForBracket . "}\n";
         } elseif (!is_array($value)) {
@@ -37,7 +37,7 @@ function iter(array $data)
     $json = iterAst($data);
     $search  =  ['* ', '\'', 'NULL'];
     $replace =  ['  ', '', 'null'];
-    
+
     $clearedData = str_replace($search, $replace, $json);
 
     return "{\n" . $clearedData . "}";

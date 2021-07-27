@@ -22,6 +22,10 @@ function formattedDefault($data1, $data2, $format)
     }
 
     $result = [];
+
+    print_r($data1);
+    print_r($data2);
+
     $mergedFiles = array_merge($data1, $data2);
 
     ksort($mergedFiles);
