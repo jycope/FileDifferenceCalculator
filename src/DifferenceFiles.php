@@ -48,6 +48,9 @@ function genDiff($pathFile1, $pathFile2, $format = "stylish")
     $data1 = getDataFromFile($pathFile1);
     $data2 = getDataFromFile($pathFile2);
 
+    print_r($data1);
+    print_r($data2);
+
     switch ($format) {
         case 'plain':
             return formattedPlain($data1, $data2, $format);
