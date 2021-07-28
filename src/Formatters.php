@@ -15,16 +15,13 @@ function addOperatorToKeys($array)
     return $result;
 }
 
-function formattedDefault($data1, $data2, $format)
+function formattedDefault(array $data1, array $data2, $format)
 {
     if (empty($data1) && empty($data2)) {
         return [];
     }
 
     $result = [];
-
-    print_r(gettype($data1) === "boolean" ? $data1 : gettype($data1));
-    print_r(gettype($data2) === "boolean" ? $data2 : gettype($data2));
 
     $mergedFiles = array_merge($data1, $data2);
 
@@ -60,7 +57,7 @@ function formattedDefault($data1, $data2, $format)
     return $result;
 }
 
-function formattedPlain($data1, $data2, $format, $path = "")
+function formattedPlain(array $data1, array $data2, $format, $path = "")
 {
     if (empty($data1) && empty($data2)) {
         return [];
@@ -102,7 +99,7 @@ function formattedPlain($data1, $data2, $format, $path = "")
     return $result;
 }
 
-function formattedJson($data1, $data2, $format, $path = "")
+function formattedJson(array $data1, array $data2, $format, $path = "")
 {
     if (empty($data1) && empty($data2)) {
         return [];
