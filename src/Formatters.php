@@ -17,10 +17,10 @@ function addOperatorToKeys($array)
 
 function formattedDefault($data1, $data2, $format)
 {
-    print_r("data1:");
-    print_r($data1);
-    print_r("data2:");
-    print_r($data2);
+    // print_r("data1:");
+    // print_r($data1);
+    // print_r("data2:");
+    // print_r($data2);
 
     if (empty($data1) && empty($data2)) {
         return [];
