@@ -32,15 +32,19 @@ function iterAst($data, $replacer = " ", $count = 2): string
     return $result;
 }
 
-function iter(array $data)
+function clearedData(string $data): string
 {
-    $json = iterAst($data);
     $search  =  ['* ', '\'', 'NULL'];
     $replace =  ['  ', '', 'null'];
 
-    $clearedData = str_replace($search, $replace, $json);
+    return str_replace($search, $replace, $data);
+}
 
-    return "{\n" . $clearedData . "}";
+function iter(array $data)
+{
+    $json = iterAst($data);
+
+    return "{\n" . clearedData($json) . "}";
 }
 
 function genDiff($pathFile1, $pathFile2, $format = "stylish")
@@ -48,15 +52,12 @@ function genDiff($pathFile1, $pathFile2, $format = "stylish")
     $data1 = getDataFromFile($pathFile1);
     $data2 = getDataFromFile($pathFile2);
 
-    print_r($data1);
-    print_r($data2);
-
     switch ($format) {
         case 'plain':
-            return formattedPlain($data1, $data2, $format);
+            return str_replace('NULL', 'null', formattedPlain($data1, $data2));
         case 'json':
-            return iter(formattedJson(addOperatorToKeys($data1), addOperatorToKeys($data2), $format));
+            return iter(formattedJson(addOperatorToKeys($data1), addOperatorToKeys($data2)));
         default:
-            return iter(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2), $format));
+            return iter(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)));
     }
 }
