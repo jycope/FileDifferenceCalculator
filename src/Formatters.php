@@ -15,7 +15,7 @@ function addOperatorToKeys($array)
     return $result;
 }
 
-function formattedDefault(array $data1, array $data2, $format)
+function formattedDefault(array $data1, array $data2, $format): array
 {
     print_r("data1:");
     print_r($data1);
@@ -44,7 +44,7 @@ function formattedDefault(array $data1, array $data2, $format)
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
 
-            if (is_array($value)) {
+            if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
                 $result[$key] = formattedDefault($valueFirstFile, $valueSecondFile, $format);
             } elseif ($valueFirstFile === $valueSecondFile) {
                 $result[$key] = $value;
