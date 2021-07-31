@@ -75,6 +75,7 @@ function formattedPlain(array $data1, array $data2, $path = "")
         $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
         $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
         $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
+        $newLine = "\n";
 
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
@@ -86,13 +87,13 @@ function formattedPlain(array $data1, array $data2, $path = "")
                 $valueFirstFile =  is_array($valueFirstFile)  ? '[complex value]' : var_export($data1[$key], true);
                 $valueSecondFile = is_array($valueSecondFile) ? '[complex value]' : var_export($data2[$key], true);
 
-                $result .= "Property '{$currentPath}' was updated. From {$valueFirstFile} to {$valueSecondFile}\n";
+                $result .= $newLine . "Property '{$currentPath}' was updated. From {$valueFirstFile} to {$valueSecondFile}";
             }
         } elseif ($isKeyContainsOnlyFirstFile) {
-            $result .= "Property '{$currentPath}' was removed\n";
+            $result .= $newLine . "Property '{$currentPath}' was removed";
         } elseif ($isKeyContainsOnlySecondFile) {
             $value = is_array($value) ? '[complex value]' : var_export($value, true);
-            $result .= "Property '{$currentPath}' was added with value: {$value}\n";
+            $result .= $newLine . "Property '{$currentPath}' was added with value: {$value}";
         }
     }
 

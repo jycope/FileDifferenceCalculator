@@ -54,7 +54,9 @@ function genDiff($pathFile1, $pathFile2, $format = "stylish")
 
     switch ($format) {
         case 'plain':
-            return str_replace('NULL', 'null', formattedPlain($data1, $data2));
+            $plainFormattedData = str_replace('NULL', 'null', formattedPlain($data1, $data2));
+            
+            return substr($plainFormattedData, 1);
         case 'json':
             return iter(formattedJson(addOperatorToKeys($data1), addOperatorToKeys($data2)));
         default:
