@@ -85,7 +85,7 @@ function formattedPlain(array $data1, array $data2, $format, $path = "")
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
 
-            if (is_array($value)) {
+            if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
                 $result .= formattedPlain($valueFirstFile, $valueSecondFile, $format, $currentPath . ".");
             } elseif ($valueFirstFile !== $valueSecondFile) {
                 $valueFirstFile = is_array($valueFirstFile) ? '[complex value]' : "'" . $data1[$key] . "'";
@@ -126,7 +126,7 @@ function formattedJson(array $data1, array $data2, $format, $path = "")
         $emptyFirstFileValue = '+ ' . $key;
         $keyEmpty = '* ' . $key;
 
-        if ($isKeyContainsTwoFiles) {
+        if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
 
