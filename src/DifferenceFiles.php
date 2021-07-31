@@ -58,7 +58,7 @@ function genDiff($pathFile1, $pathFile2, $format = "stylish")
             
             return substr($plainFormattedData, 1);
         case 'json':
-            return iter(formattedJson(addOperatorToKeys($data1), addOperatorToKeys($data2)));
+            return iter(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)));
         default:
             return iter(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)));
     }
