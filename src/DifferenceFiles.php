@@ -10,22 +10,25 @@ use function Differ\Formatters\formattedJson;
 use function Differ\Formatters\addOperatorToKeys;
 use function Differ\Parsers\getDataFromFile;
 
-function iterAst($data, $replacer = " ", $count = 2): string
+function convertingArrayToJson($data, $replacer = " ", $count = 2, $lineEnd = "\n", $isQuoteAroundTheKey = false): string
 {
     $result = "";
     $indent = str_repeat($replacer, $count);
+    $wrapTheValueInQuotes = fn ($value) => "\"{$value}\"";
 
     foreach ($data as $key => $value) {
+        $key = $wrapTheValueInQuotes($key);
+        
         if (is_array($value)) {
             $firstSymbols = explode(" ", $key)[0];
             $isSymboldChanged = $firstSymbols === "-" || $firstSymbols === "+" || $firstSymbols === "*";
             $indentForBracket = $isSymboldChanged  ? str_repeat($replacer, $count + 2) : $indent;
 
-            $result .= $indent . $key . ": {\n" . iterAst($value, $replacer, $count + 4) . $indentForBracket . "}\n";
+            $result .= $indent . $key . ": {\n" . convertingArrayToJson($value, $replacer, $count + 4, $lineEnd) . $indentForBracket . "}" . $lineEnd;
         } elseif (!is_array($value)) {
-            $value = var_export($value, true);
-
-            $result .= $indent . $key . ": " . $value . "\n";
+            $value = $wrapTheValueInQuotes(var_export($value, true));
+            
+            $result .= $indent . $key . ": " . $value . $lineEnd;
         }
     }
 
@@ -40,9 +43,18 @@ function clearedData(string $data): string
     return str_replace($search, $replace, $data);
 }
 
-function iter(array $data)
+function formattedDataToJsonStr(array $data, $format = "default")
 {
-    $json = iterAst($data);
+    $json = "";
+
+    switch ($format) {
+        case 'json':
+            $json = convertingArrayToJson($data, " ", 2, ",\n", true);
+            break;
+        default:
+            $json = convertingArrayToJson($data);
+            break;
+    }
 
     return "{\n" . clearedData($json) . "}";
 }
@@ -58,8 +70,8 @@ function genDiff($pathFile1, $pathFile2, $format = "stylish")
             
             return substr($plainFormattedData, 1);
         case 'json':
-            return iter(formattedJson($data1, $data2));
+            return formattedDataToJsonStr(formattedJson($data1, $data2), $format);
         default:
-            return iter(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)));
+            return formattedDataToJsonStr(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)));
     }
 }
