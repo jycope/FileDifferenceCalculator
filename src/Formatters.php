@@ -109,33 +109,31 @@ function formattedPlain(array $data1, array $data2, $path = "")
     ksort($mergedFiles);
 
     foreach ($mergedFiles as $key => $value) {
-        $currentPath = $path . $key;
+        $currPath = $path . $key;
 
         $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
         $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
         $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
-        $newLine = "\n";
 
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
 
             if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
-                $result .= formattedPlain($valueFirstFile, $valueSecondFile, $currentPath . ".");
+                $result .= formattedPlain($valueFirstFile, $valueSecondFile, $currPath . ".");
             } elseif ($valueFirstFile !== $valueSecondFile) {
                 $valueFirstFile =  is_array($valueFirstFile)  ? '[complex value]' : var_export($data1[$key], true);
                 $valueSecondFile = is_array($valueSecondFile) ? '[complex value]' : var_export($data2[$key], true);
 
-                $result .= $newLine . "Property '{$currentPath}' was updated. From {$valueFirstFile} to {$valueSecondFile}";
+                $result .= "\n" . "Property '{$currPath}' was updated. From {$valueFirstFile} to {$valueSecondFile}";
             }
         } elseif ($isKeyContainsOnlyFirstFile) {
-            $result .= $newLine . "Property '{$currentPath}' was removed";
+            $result .= "\n" . "Property '{$currPath}' was removed";
         } elseif ($isKeyContainsOnlySecondFile) {
             $value = is_array($value) ? '[complex value]' : var_export($value, true);
-            $result .= $newLine . "Property '{$currentPath}' was added with value: {$value}";
+            $result .= "\n" . "Property '{$currPath}' was added with value: {$value}";
         }
     }
 
     return $result;
 }
-
