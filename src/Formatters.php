@@ -16,6 +16,45 @@ function addOperatorToKeys($array)
     return $result;
 }
 
+function formattedJson(array $data1, array $data2): array
+{
+    if (empty($data1) && empty($data2)) {
+        return [];
+    }
+
+    $result = [];
+
+    $mergedFiles = array_merge($data1, $data2);
+
+    ksort($mergedFiles);
+
+    foreach ($mergedFiles as $key => $value) {
+        $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
+        $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
+        $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
+
+        if ($isKeyContainsTwoFiles) {
+            $valueFirstFile = $data1[$key];
+            $valueSecondFile = $data2[$key];
+
+            if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
+                $result[$key] = formattedJson($valueFirstFile, $valueSecondFile);
+            } elseif ($valueFirstFile === $valueSecondFile) {
+                $result[$key] = $value;
+            } elseif ($valueFirstFile !== $valueSecondFile) {
+                $result[$key] = $valueFirstFile;
+                $result[$key] = $value;
+            }
+        } elseif ($isKeyContainsOnlySecondFile) {
+            $result[$key] = $value;
+        } elseif ($isKeyContainsOnlyFirstFile) {
+            $result[$key] = $value;
+        }
+    }
+
+    return $result;
+}
+
 function formattedDefault(array $data1, array $data2): array
 {
     if (empty($data1) && empty($data2)) {
