@@ -14,7 +14,7 @@ function convertingArrayToJson($data, $replacer = " ", $count = 2, $lineEnd = "\
 {
     $result = "";
     $indent = str_repeat($replacer, $count);
-    $wrapTheValueInQuotes = fn ($value) => "\"{$value}\"";
+    $wrapTheValueInQuotes = fn ($value) => $isQuoteAroundTheKey ? "\"{$value}\"" : $value;
 
     foreach ($data as $key => $value) {
         $key = $wrapTheValueInQuotes($key);
@@ -71,7 +71,7 @@ function genDiff($pathFile1, $pathFile2, $format = "stylish")
             return substr($plainFormattedData, 1);
         case 'json':
             return formattedDataToJsonStr(formattedJson($data1, $data2), $format);
-        default:
+        case "stylish":
             return formattedDataToJsonStr(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)));
     }
 }
