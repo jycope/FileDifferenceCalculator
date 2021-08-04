@@ -1,4 +1,5 @@
 /vendor/
-/coverage/
-/
+/code-coverage/
+/cc-test-report/
 .phpunit.result.cache
+.gitignore
