@@ -12,6 +12,6 @@ if (file_exists($autoloadPath1)) {
 
 use function Differ\Info\getInfo;
 
-echo getInfo();
+print_r(getInfo());
 
 
