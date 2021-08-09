@@ -18,17 +18,11 @@ function addOperatorToKeys(array $data): array
 
 function formattedJson(array $data1, array $data2): array
 {
-    if (empty($data1) && empty($data2)) {
-        return [];
-    }
-
     $result = [];
 
-    $mergedFiles = array_merge($data1, $data2);
+    $mergedFiles = collect(array_merge($data1, $data2))->sortKeys();
 
-    ksort($mergedFiles);
-
-    foreach ($mergedFiles as $key => $value) {
+    $result = $mergedFiles->reduce(function ($result, $value, $key) use ($data1, $data2) {
         $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
         $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
         $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
@@ -50,69 +44,52 @@ function formattedJson(array $data1, array $data2): array
         } elseif ($isKeyContainsOnlyFirstFile) {
             $result[$key] = $value;
         }
-    }
+    }, []);
 
     return $result;
 }
 
-function getProperties($property)
-{
-    return $property['properties'];
-}
-
-function getСomparison(array $result, $value, $key, array $data1, array $data2): array
-{
-    $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
-    $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
-    $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
-
-    $emptySecondFileValue = str_replace("* ", "- ", $key);
-    $emptyFirstFileValue = str_replace("* ", "+ ", $key);
-
-    if ($isKeyContainsTwoFiles) {
-        $valueFirstFile = $data1[$key];
-        $valueSecondFile = $data2[$key];
-
-        if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
-            $result[$key] = formattedDefault($valueFirstFile, $valueSecondFile);
-        } elseif ($valueFirstFile === $valueSecondFile) {
-            $result[$key] = $value;
-        } elseif ($valueFirstFile !== $valueSecondFile) {
-            $result[$emptySecondFileValue] = $valueFirstFile;
-            $result[$emptyFirstFileValue] = $value;
-        }
-    } elseif ($isKeyContainsOnlySecondFile) {
-        $result[$emptyFirstFileValue] = $value;
-    } elseif ($isKeyContainsOnlyFirstFile) {
-        $result[$emptySecondFileValue] = $value;
-    }
-
-    return $result;
-}
-
-function formattedDefault(array $data1, array $data2)
+function formattedDefault(array $data1, array $data2): array
 {
     $mergedFiles = collect(array_merge($data1, $data2))->sortKeys();
 
-    $comparisonData = $mergedFiles->reduce(function ($carry, $item, $key) use ($data1, $data2) {
-        return getСomparison($carry, $item, $key, $data1, $data2);
+    $comparisonData = $mergedFiles->reduce(function ($result, $value, $key) use ($data1, $data2) {
+        $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
+        $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
+        $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
+    
+        $emptySecondFileValue = str_replace("* ", "- ", $key);
+        $emptyFirstFileValue = str_replace("* ", "+ ", $key);
+    
+        if ($isKeyContainsTwoFiles) {
+            $valueFirstFile = $data1[$key];
+            $valueSecondFile = $data2[$key];
+    
+            if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
+                $result[$key] = formattedDefault($valueFirstFile, $valueSecondFile);
+            } elseif ($valueFirstFile === $valueSecondFile) {
+                $result[$key] = $value;
+            } elseif ($valueFirstFile !== $valueSecondFile) {
+                $result[$emptySecondFileValue] = $valueFirstFile;
+                $result[$emptyFirstFileValue] = $value;
+            }
+        } elseif ($isKeyContainsOnlySecondFile) {
+            $result[$emptyFirstFileValue] = $value;
+        } elseif ($isKeyContainsOnlyFirstFile) {
+            $result[$emptySecondFileValue] = $value;
+        }
+    
+        return $result;
     }, []);
 
     return collect($comparisonData)->all();
 }
 
-function formattedPlain(array $data1, array $data2, $path = "")
+function formattedPlain(array $data1, array $data2, string $path = ""): array
 {
-    if (empty($data1) && empty($data2)) {
-        return [];
-    }
+    $mergedFiles = collect(array_merge($data1, $data2))->sortKeys();
 
-    $mergedFiles = array_merge($data1, $data2);
-    $result = [];
-
-    ksort($mergedFiles);
-
-    foreach ($mergedFiles as $key => $value) {
+    $result = $mergedFiles->reduce(function ($result, $value, $key) use ($path, $data1, $data2) {
         $currPath = $path . $key;
 
         $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
@@ -137,7 +114,9 @@ function formattedPlain(array $data1, array $data2, $path = "")
             $value = is_array($value) ? '[complex value]' : var_export($value, true);
             $result[] = "Property '{$currPath}' was added with value: {$value}";
         }
-    }
+
+        return $result;
+    }, []);
 
     return $result;
 }
