@@ -24,7 +24,8 @@ function convertingArrayToJson(array $data, string $replacer = " ", int $count =
         $indent = str_repeat($replacer, $count);
 
         if (!is_array($value)) {
-            $result[] = $indent . $key . ": " . var_export($value, true) . "\n";
+            $value = var_export($value, true);
+            $result[] = "{$indent}{$key}: {$value}\n";
 
             return $result;
         }
@@ -35,7 +36,7 @@ function convertingArrayToJson(array $data, string $replacer = " ", int $count =
 
         $valueElemForJson = convertingArrayToJson($value, $replacer, $count + 4) . $indentForBracket;
 
-        $result[] = $indent . $key . ": {\n" . $valueElemForJson . "}\n";
+        $result[] = "{$indent}{$key}: {\n$valueElemForJson}\n";
 
         return $result;
     }, []);
@@ -45,18 +46,12 @@ function convertingArrayToJson(array $data, string $replacer = " ", int $count =
 
 function clearedData(string $data, string $format = 'stylish'): string
 {
-    $search  =  [];
-    $replace =  [];
+    $search =  ['* ', '\'', 'NULL'];
+    $replace = ['  ', '', 'null'];
 
     switch ($format) {
         case 'plain':
-            $search  = 'NULL';
-            $replace = 'null';
-            break;
-        default:
-            $search =  ['* ', '\'', 'NULL'];
-            $replace = ['  ', '', 'null'];
-            break;
+            return str_replace('NULL', 'null', $data);
     }
 
     return str_replace($search, $replace, $data);
@@ -79,13 +74,13 @@ function genDiff(string $pathFile1, string $pathFile2, string $format = "stylish
             $dataFormatted = collect(formattedPlain($data1, $data2))->flatten()->join("\n");
             return clearedData($dataFormatted, $format);
         case 'json':
-            $jsonNotCleared = json_encode(
+            $jsonNotCleared = (string) json_encode(
                 formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)),
                 FORMAT_FLAGS
             );
 
             return clearedData($jsonNotCleared);
-        case "stylish":
-            return formattedDataToJsonStr(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)));
     }
+
+    return formattedDataToJsonStr(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)));
 }
