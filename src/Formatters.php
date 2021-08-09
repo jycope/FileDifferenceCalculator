@@ -5,13 +5,13 @@ namespace Differ\Formatters;
 use function Differ\Parsers\getDataFromFile;
 use function Differ\Differ\clearedData;
 
-function addOperatorToKeys($array)
+function addOperatorToKeys(array $data): array
 {
     $result = [];
 
-    foreach ($array as $key => $value) {
-        $result["* " . $key] = is_array($value) ? addOperatorToKeys($value) : $value;
-    }
+    collect($data)->map(function ($value, $key) use (&$result) {
+        $result['* ' . $key] = is_array($value) ? addOperatorToKeys($value) : $value;
+    });
 
     return $result;
 }
@@ -68,7 +68,7 @@ function getСomparison(array $result, $value, $key, array $data1, array $data2)
 
     $emptySecondFileValue = str_replace("* ", "- ", $key);
     $emptyFirstFileValue = str_replace("* ", "+ ", $key);
-    
+
     if ($isKeyContainsTwoFiles) {
         $valueFirstFile = $data1[$key];
         $valueSecondFile = $data2[$key];

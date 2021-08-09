@@ -10,7 +10,7 @@ use function Differ\Formatters\formattedJson;
 use function Differ\Formatters\addOperatorToKeys;
 use function Differ\Parsers\getDataFromFile;
 
-const FORMAT_FLAGS = 
+const FORMAT_FLAGS =
     JSON_NUMERIC_CHECK |
     JSON_FORCE_OBJECT |
     JSON_PRESERVE_ZERO_FRACTION |
@@ -18,9 +18,9 @@ const FORMAT_FLAGS =
     JSON_UNESCAPED_UNICODE |
     JSON_PRETTY_PRINT;
 
-function convertingArrayToJson($data, $replacer = " ", $count = 2): string
+function convertingArrayToJson(array $data, string $replacer = " ", int $count = 2): string
 {
-    $getJsonRepresantion = function ($result, $value, $key) use ($replacer, $count, &$getJsonRepresantion) {
+    return collect($data)->reduce(function ($result, $value, $key) use ($replacer, $count, &$getJsonRepresantion) {
         $indent = str_repeat($replacer, $count);
         $lineEnd = "\n";
 
@@ -29,21 +29,18 @@ function convertingArrayToJson($data, $replacer = " ", $count = 2): string
             $isSymboldChanged = $firstSymbols === "-" || $firstSymbols === "+" || $firstSymbols === "*";
             $indentForBracket = $isSymboldChanged ? str_repeat($replacer, $count + 2) : $indent;
 
-            $valueElemForJson = $getJsonRepresantion($value, $replacer, $count + 4);
+            $valueElemForJson = convertingArrayToJson($value, $replacer, $count + 4) . $indentForBracket;
 
-            $result[] = $indent . $key . ": {\n" . $valueElemForJson . "}" . "\n";
+            $result .= $indent . $key . ": {\n" . $valueElemForJson . "}" . "\n";
         } elseif (!is_array($value)) {
-            $value = var_export($value, true);
-            $result[] = $indent . $key . ": " . $value . "\n";
+            $result .= $indent . $key . ": " . var_export($value, true) . "\n";
         }
 
         return $result;
-    };
-
-    return collect($data)->reduce($getJsonRepresantion, []);
+    }, "");
 }
 
-function clearedData(string $data, $format = 'stylish'): string
+function clearedData(string $data, string $format = 'stylish'): string
 {
     $search  =  [];
     $replace =  [];
@@ -62,14 +59,14 @@ function clearedData(string $data, $format = 'stylish'): string
     return str_replace($search, $replace, $data);
 }
 
-function formattedDataToJsonStr(array $data, $format = "default")
+function formattedDataToJsonStr(array $data, string $format = "default"): string
 {
     $json = convertingArrayToJson($data);
 
     return "{\n" . clearedData($json) . "}";
 }
 
-function genDiff($pathFile1, $pathFile2, $format = "stylish")
+function genDiff(string $pathFile1, string $pathFile2, string $format = "stylish"): string
 {
     $data1 = getDataFromFile($pathFile1);
     $data2 = getDataFromFile($pathFile2);
@@ -83,7 +80,7 @@ function genDiff($pathFile1, $pathFile2, $format = "stylish")
                 formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)),
                 FORMAT_FLAGS
             );
-            
+
             return clearedData($jsonNotCleared);
         case "stylish":
             return formattedDataToJsonStr(formattedDefault(addOperatorToKeys($data1), addOperatorToKeys($data2)));
