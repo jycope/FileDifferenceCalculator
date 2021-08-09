@@ -6,7 +6,7 @@ use Docopt;
 
 use function Differ\Differ\genDiff;
 
-function getInfo()
+function getInfo(): string
 {
     $doc = <<<DOC
     Generate diff

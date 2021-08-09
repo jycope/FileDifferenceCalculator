@@ -24,8 +24,8 @@ function convertingArrayToJson(array $data, string $replacer = " ", int $count =
         $indent = str_repeat($replacer, $count);
 
         if (!is_array($value)) {
-            $value = var_export($value, true);
-            $result[] = "{$indent}{$key}: {$value}\n";
+            $property = "{$indent}{$key}: " . var_export($value, true) . "\n";
+            $result->push($property);
 
             return $result;
         }
@@ -35,11 +35,12 @@ function convertingArrayToJson(array $data, string $replacer = " ", int $count =
         $indentForBracket = $isSymboldChanged ? str_repeat($replacer, $count + 2) : $indent;
 
         $valueElemForJson = convertingArrayToJson($value, $replacer, $count + 4) . $indentForBracket;
+        $properties = "{$indent}{$key}: {\n" . $valueElemForJson . "}\n";
 
-        $result[] = "{$indent}{$key}: {\n$valueElemForJson}\n";
+        $result->push($properties);
 
         return $result;
-    }, []);
+    }, collect([]));
 
     return collect($result)->join("");
 }
