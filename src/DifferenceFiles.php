@@ -20,24 +20,27 @@ const FORMAT_FLAGS =
 
 function convertingArrayToJson(array $data, string $replacer = " ", int $count = 2): string
 {
-    return collect($data)->reduce(function ($result, $value, $key) use ($replacer, $count, &$getJsonRepresantion) {
+    $result = collect($data)->reduce(function ($result, $value, $key) use ($replacer, $count) {
         $indent = str_repeat($replacer, $count);
-        $lineEnd = "\n";
 
-        if (is_array($value)) {
-            $firstSymbols = explode(" ", $key)[0];
-            $isSymboldChanged = $firstSymbols === "-" || $firstSymbols === "+" || $firstSymbols === "*";
-            $indentForBracket = $isSymboldChanged ? str_repeat($replacer, $count + 2) : $indent;
+        if (!is_array($value)) {
+            $result[] = $indent . $key . ": " . var_export($value, true) . "\n";
 
-            $valueElemForJson = convertingArrayToJson($value, $replacer, $count + 4) . $indentForBracket;
-
-            $result .= $indent . $key . ": {\n" . $valueElemForJson . "}" . "\n";
-        } elseif (!is_array($value)) {
-            $result .= $indent . $key . ": " . var_export($value, true) . "\n";
+            return $result;
         }
 
+        $firstSymbols = explode(" ", $key)[0];
+        $isSymboldChanged = $firstSymbols === "-" || $firstSymbols === "+" || $firstSymbols === "*";
+        $indentForBracket = $isSymboldChanged ? str_repeat($replacer, $count + 2) : $indent;
+
+        $valueElemForJson = convertingArrayToJson($value, $replacer, $count + 4) . $indentForBracket;
+
+        $result[] = $indent . $key . ": {\n" . $valueElemForJson . "}\n";
+
         return $result;
-    }, "");
+    }, []);
+    
+    return collect($result)->join("");
 }
 
 function clearedData(string $data, string $format = 'stylish'): string
