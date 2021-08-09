@@ -57,14 +57,14 @@ function formattedDefault(array $data1, array $data2): array
         $isKeyContainsTwoFiles = array_key_exists($key, $data1) && array_key_exists($key, $data2);
         $isKeyContainsOnlyFirstFile = array_key_exists($key, $data1) && !array_key_exists($key, $data2);
         $isKeyContainsOnlySecondFile = !array_key_exists($key, $data1) && array_key_exists($key, $data2);
-    
+
         $emptySecondFileValue = str_replace("* ", "- ", $key);
         $emptyFirstFileValue = str_replace("* ", "+ ", $key);
-    
+
         if ($isKeyContainsTwoFiles) {
             $valueFirstFile = $data1[$key];
             $valueSecondFile = $data2[$key];
-    
+
             if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
                 $result[$key] = formattedDefault($valueFirstFile, $valueSecondFile);
             } elseif ($valueFirstFile === $valueSecondFile) {
@@ -78,7 +78,7 @@ function formattedDefault(array $data1, array $data2): array
         } elseif ($isKeyContainsOnlyFirstFile) {
             $result[$emptySecondFileValue] = $value;
         }
-    
+
         return $result;
     }, []);
 
