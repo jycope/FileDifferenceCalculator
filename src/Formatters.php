@@ -7,13 +7,14 @@ use function Differ\Differ\clearedData;
 
 function addOperatorToKeys(array $data): array
 {
-    $result = collect($data)->reduce(function ($result, $value, $key): array {
-        $result['* ' . $key] = is_array($value) ? addOperatorToKeys($value) : $value;
+    $result = collect($data)->reduce(function ($result, $value, $key): object {
+        $tmp = is_array($value) ? addOperatorToKeys($value) : $value;
+        $result->put('* ' . $key, $tmp);
 
         return $result;
-    }, []);
+    }, collect([]));
 
-    return $result;
+    return $result->all();
 }
 
 function formattedJson(array $data1, array $data2): array
@@ -103,16 +104,16 @@ function formattedPlain(array $data1, array $data2, string $path = ""): array
             if (is_array($valueFirstFile) && is_array($valueSecondFile)) {
                 $result->push(formattedPlain($valueFirstFile, $valueSecondFile, $currPath . "."));
             } elseif ($valueFirstFile !== $valueSecondFile) {
-                $valueFirstFile =  is_array($valueFirstFile)  ? '[complex value]' : var_export($data1[$key], true);
-                $valueSecondFile = is_array($valueSecondFile) ? '[complex value]' : var_export($data2[$key], true);
+                $valFirstFileCopy  =  is_array($valueFirstFile)  ? '[complex value]' : var_export($data1[$key], true);
+                $valSecondFileCopy = is_array($valueSecondFile) ? '[complex value]' : var_export($data2[$key], true);
 
-                $result->push("Property '{$currPath}' was updated. From {$valueFirstFile} to {$valueSecondFile}");
+                $result->push("Property '{$currPath}' was updated. From {$valFirstFileCopy} to {$valSecondFileCopy}");
             }
         } elseif ($isKeyContainsOnlyFirstFile) {
             $result->push("Property '{$currPath}' was removed");
         } elseif ($isKeyContainsOnlySecondFile) {
-            $value = is_array($value) ? '[complex value]' : var_export($value, true);
-            $result->push("Property '{$currPath}' was added with value: {$value}");
+            $valueTmp = is_array($value) ? '[complex value]' : var_export($value, true);
+            $result->push("Property '{$currPath}' was added with value: {$valueTmp}");
         }
 
         return $result;
