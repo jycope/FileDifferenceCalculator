@@ -39,7 +39,7 @@ function convertingArrayToJson(array $data, string $replacer = " ", int $count =
 
         return $result;
     }, []);
-    
+
     return collect($result)->join("");
 }
 
