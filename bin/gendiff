@@ -10,7 +10,6 @@ if (file_exists($autoloadPath1)) {
   require_once $autoloadPath2;
 }
 
-use Docopt;
 use function Differ\Differ\genDiff;
 
 $doc = <<<DOC
