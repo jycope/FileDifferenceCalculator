@@ -1,73 +1,130 @@
 <?php
 
-namespace Differ\tests\GendiffTest;
+namespace Differ\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Differ\Differ\genDiff;
 
 use function Differ\Differ\genDiff;
-use function Differ\Differ\convertedToJson;
 
-class GendiffTest extends TestCase
+class GenDiffTest extends TestCase
 {
-    public function testDifferenceJsonFilesRelativePath(): void
+    public function dataProviderForJsonStylish(): array
     {
-        $filePath1 = __DIR__ . '/fixtures/json/file1.json';
-        $filePath2 = __DIR__ . '/fixtures/json/file2.json';
+        $relativePath = [
+            file_get_contents(
+                __DIR__ . '/fixtures/expectedWhichPathTest.txt'
+            ),
+            genDiff(
+                __DIR__ . '/fixtures/json/file1.json',
+                __DIR__ . '/fixtures/json/file2.json'
+            )
+        ];
 
-        $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt');
+        $absolutePath = [
+            file_get_contents('tests/fixtures/expectedWhichPathTest.txt'),
+            genDiff('tests/fixtures/json/file1.json', 'tests/fixtures/json/file2.json')
+        ];
 
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        $emptyFiles = [
+            file_get_contents('tests/fixtures/expectedWhichEmptyFiles.json'),
+            genDiff('tests/fixtures/json/fileEmpty1.json', 'tests/fixtures/json/fileEmpty2.json')
+        ];
+
+        $nestedFiles = [
+            file_get_contents('tests/fixtures/expectedWhichNestedFilesTest.txt'),
+            genDiff('tests/fixtures/json/fileNested1.json', 'tests/fixtures/json/fileNested2.json')
+        ];
+
+        return [
+            $relativePath,
+            $absolutePath,
+            $emptyFiles,
+            $nestedFiles
+        ];
     }
 
-    public function testDifferenceJsonFilesAbsolutePath(): void
+    /**
+     * @dataProvider dataProviderForJsonStylish
+     */
+
+    public function testStylishFormat($expected, $actual): void
     {
-        $filePath1 = 'tests/fixtures/json/file1.json';
-        $filePath2 = 'tests/fixtures/json/file2.json';
-
-        $expected = file_get_contents('tests/fixtures/expectedWhichPathTest.txt');
-
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        $this->assertEquals($expected, $actual);
     }
 
-    public function testEmptyJsonFiles(): void
+    public function dataProviderForYamlFormat(): array
     {
-        $filePath1 = 'tests/fixtures/json/fileEmpty1.json';
-        $filePath2 = 'tests/fixtures/json/fileEmpty2.json';
+        $relativePath = [
+            file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt'),
+            genDiff(
+                __DIR__ . '/fixtures/yaml/file1.yaml',
+                __DIR__ . '/fixtures/yaml/file2.yaml'
+            )
+        ];
 
-        $expected = file_get_contents('tests/fixtures/json/expectedWhichEmptyFiles.json');
+        $absolutePath = [
+            file_get_contents('tests/fixtures/expectedWhichEmptyFiles.json'),
+            genDiff(
+                'tests/fixtures/yaml/fileEmpty1.yaml',
+                'tests/fixtures/yaml/fileEmpty2.yaml'
+            )
+        ];
 
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        $emptyFiles = [
+            file_get_contents('tests/fixtures/expectedWhichEmptyFiles.json'),
+            genDiff('tests/fixtures/yaml/fileEmpty1.yaml', 'tests/fixtures/yaml/fileEmpty2.yaml')
+        ];
+
+        return [
+            $relativePath,
+            $absolutePath,
+            $emptyFiles
+        ];
     }
 
-    public function testDifferenceYamlFilesRelativePath(): void
+    /**
+     * @dataProvider dataProviderForYamlFormat
+     */
+
+    public function testYamlFormat($expected, $actual): void
     {
-        $filePath1 = __DIR__ . '/fixtures/yaml/file1.yaml';
-        $filePath2 = __DIR__ . '/fixtures/yaml/file2.yaml';
-
-        $expected = file_get_contents(__DIR__ . '/fixtures/expectedWhichPathTest.txt');
-
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        $this->assertEquals($expected, $actual);
     }
 
-    public function testDifferenceYamlFilesAbsolutePath(): void
+    public function dataProviderForJsonFormat(): array
     {
-        $filePath1 = 'tests/fixtures/yaml/fileEmpty1.yaml';
-        $filePath2 = 'tests/fixtures/yaml/fileEmpty2.yaml';
+        $json = [
+            file_get_contents('tests/fixtures/expectedOutputToJson.json'),
+            genDiff(
+                'tests/fixtures/json/file1.json',
+                'tests/fixtures/json/file2.json',
+                'json'
+            )
+        ];
 
-        $expected = file_get_contents('tests/fixtures/json/expectedWhichEmptyFiles.json');
+        $jsonNested = [
+            file_get_contents('tests/fixtures/expectedOutputToNestedJson.json'),
+            genDiff(
+                'tests/fixtures/json/fileNested1.json',
+                'tests/fixtures/json/fileNested2.json',
+                'json'
+            )
+        ];
 
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        return [
+            $jsonNested,
+            $json
+        ];
     }
 
-    public function testDifferenceNestedFiles(): void
+    /**
+     * @dataProvider dataProviderForJsonFormat
+     */
+
+    public function testJsonFormat($expected, $actual): void
     {
-        $filePath1 = 'tests/fixtures/json/fileNested1.json';
-        $filePath2 = 'tests/fixtures/json/fileNested2.json';
-
-        $expected = file_get_contents('tests/fixtures/expectedWhichNestedFilesTest.txt');
-
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2));
+        $this->assertEquals($expected, $actual);
     }
 
     public function testPlainFormat(): void
@@ -78,25 +135,5 @@ class GendiffTest extends TestCase
         $expected = file_get_contents('tests/fixtures/expectedWhichPlainFormat.txt');
 
         $this->assertEquals($expected, genDiff($filePath1, $filePath2, 'plain'));
-    }
-
-    public function testForJsonNotNestedFormat(): void
-    {
-        $filePath1 = 'tests/fixtures/json/file1.json';
-        $filePath2 = 'tests/fixtures/json/file2.json';
-
-        $expected = file_get_contents('tests/fixtures/expectedOutputToJson.json');
-
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2, 'json'));
-    }
-
-    public function testForNestedJsonFormat(): void
-    {
-        $filePath1 = 'tests/fixtures/json/fileNested1.json';
-        $filePath2 = 'tests/fixtures/json/fileNested2.json';
-
-        $expected = file_get_contents('tests/fixtures/expectedOutputToNestedJson.json');
-
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2, 'json'));
     }
 }
