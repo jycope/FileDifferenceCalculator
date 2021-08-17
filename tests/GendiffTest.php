@@ -3,7 +3,6 @@
 namespace Differ\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Differ\Differ\genDiff;
 
 use function Differ\Differ\genDiff;
 
@@ -125,15 +124,5 @@ class GenDiffTest extends TestCase
     public function testJsonFormat($expected, $actual): void
     {
         $this->assertEquals($expected, $actual);
-    }
-
-    public function testPlainFormat(): void
-    {
-        $filePath1 = 'tests/fixtures/json/fileNested1.json';
-        $filePath2 = 'tests/fixtures/json/fileNested2.json';
-
-        $expected = file_get_contents('tests/fixtures/expectedWhichPlainFormat.txt');
-
-        $this->assertEquals($expected, genDiff($filePath1, $filePath2, 'plain'));
     }
 }

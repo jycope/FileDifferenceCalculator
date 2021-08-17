@@ -33,5 +33,3 @@ $filePath2 = $args['<secondFile>'];
 $format    = $args['--format'];
 
 echo genDiff($filePath1, $filePath2, $format);
-
-

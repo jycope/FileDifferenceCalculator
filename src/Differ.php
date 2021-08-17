@@ -2,21 +2,30 @@
 
 namespace Differ\Differ;
 
-use Symfony\Component\Yaml\Yaml;
-
-use function Differ\Formatters\formattedDefault;
-use function Differ\Formatters\formattedPlain;
-use function Differ\Formatters\formattedJson;
-use function Differ\Formatters\addOperatorToKeys;
+use function Differ\Formatters\FormattedDefault\formattedDefault;
+use function Differ\Formatters\FormattedPlain\formattedPlain;
 use function Differ\Parsers\getDataFromFile;
 
 const FORMAT_FLAGS =
-    JSON_NUMERIC_CHECK |
+JSON_NUMERIC_CHECK |
     JSON_FORCE_OBJECT |
     JSON_PRESERVE_ZERO_FRACTION |
     JSON_UNESCAPED_SLASHES |
     JSON_UNESCAPED_UNICODE |
     JSON_PRETTY_PRINT;
+
+
+function addOperatorToKeys(array $data): array
+{
+    $result = collect($data)->reduce(function ($result, $value, $key): object {
+        $tmp = is_array($value) ? addOperatorToKeys($value) : $value;
+        $result->put('* ' . $key, $tmp);
+
+        return $result;
+    }, collect([]));
+
+    return $result->all();
+}
 
 function convertingArrayToJson(array $data, string $replacer = " ", int $count = 2): string
 {
@@ -58,7 +67,7 @@ function clearedData(string $data, string $format = 'stylish'): string
     return str_replace($search, $replace, $data);
 }
 
-function formattedDataToJsonStr(array $data, string $format = "default"): string
+function formattedDataToJsonStr(array $data): string
 {
     $json = convertingArrayToJson($data);
 

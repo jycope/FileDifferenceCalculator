@@ -16,9 +16,11 @@
     },
     "autoload": {
         "files": [
-            "src/DifferenceFiles.php",
-            "src/Parser.php",
-            "src/Formatters.php"
+            "src/Differ.php",
+            "src/Parsers.php",
+            "src/Formatters/FormattedDefault.php",
+            "src/Formatters/FormattedJson.php",
+            "src/Formatters/FormattedPlain.php"
         ]
     },
     "scripts": {
