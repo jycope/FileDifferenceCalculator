@@ -6,7 +6,7 @@ use Symfony\Component\Yaml\Yaml;
 
 function getDataFromFile(string $filepath): array
 {
-    $fileExtension = substr($filepath, -4);
+    $fileExtension = explode(".", $filepath)[1];
 
     switch ($fileExtension) {
         case 'json':
@@ -15,8 +15,6 @@ function getDataFromFile(string $filepath): array
         case 'yml':
             return Yaml::parseFile($filepath) ?? [];
         default:
-            throw new \Exception("Неизвестный формат: ", $fileExtension);
+            throw new \Exception("Unknown format: \"{$fileExtension}\"");
     }
-
-    return [];
 }

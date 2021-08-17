@@ -18,3 +18,9 @@ validate:
 
 clearcache:
 		composer clearcache
+
+check:
+		composer exec --verbose phpcs -- --standard=PSR12 src bin tests
+		composer run-script phpunit -- --colors=always tests
+
+		
